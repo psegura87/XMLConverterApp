@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      input.hover {background-color: #555;}
+      input {width: 200px;}
+    </style>
+
+    <script>
+
+      //debug window
+      // require('nw.gui').Window.get().showDevTools();
+
+      //Same as $(document).ready();
+      function ready(fn) {
+        if (document.readyState != 'loading'){
+          fn();
+        } else {
+          document.addEventListener('DOMContentLoaded', fn);
+        }
+      }
+
+      //When the page has loaded, run this code
+      ready(function(){
+        // prevent default behavior from changing page on dropped file
+        window.ondragover = function(e) { e.preventDefault(); return false };
+        // NOTE: ondrop events WILL NOT WORK if you do not "preventDefault" in the ondragover event!!
+        window.ondrop = function(e) { e.preventDefault(); return false };
+
+        var templateFile;
+        var template = document.getElementById('template');
+        template.ondragover = function () { this.className = 'hover'; return false; };
+        template.ondragleave = function () { this.className = ''; return false; };
+        template.ondrop = function (e) {
+          e.preventDefault();
+          for (var i = 0; i < e.dataTransfer.files.length; ++i) {
+            templateFile = e.dataTransfer.files[i].path;
+            templateInput(templateFile);
+          }
+          return false;
+        };
+
+        var fileToConvert;
+        var holder = document.getElementById('holder');
+        holder.ondragover = function () { this.className = 'hover'; return false; };
+        holder.ondragleave = function () { this.className = ''; return false; };
+        holder.ondrop = function (e) {
+          e.preventDefault();
+          for (var i = 0; i < e.dataTransfer.files.length; ++i) {
+            fileToConvert = e.dataTransfer.files[i].path;
+            readFile(fileToConvert);
+          }
+          return false;
+        };
+      });
+  </script>
+  <script src="convert.js"></script>
+  </head>
+  <body>
+    Drag .docx template file here: <input id="template" width="400px">
+    <br>
+    Drag XML file to insert into Word.docx template here: <input id="holder" width="400px">
+  </body>
+</html>
